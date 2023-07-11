@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.storage.impl;
 
-
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
