@@ -8,6 +8,7 @@ import ru.practicum.shareit.item.storage.impl.ItemRepository;
 @RequiredArgsConstructor
 public class ItemMapper {
     private final ItemRepository itemRepository;
+
     public static ItemDto toItemDto(Item item) {
         return ItemDto.builder()
                 .id(item.getId())

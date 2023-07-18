@@ -27,8 +27,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getAll(Long userId) {
         return itemRepository.getAll().stream()
-                .filter(x-> userId.equals(x.getOwner().getId()))
-                .map(s->toItemDto(s))
+                .filter(x -> userId.equals(x.getOwner().getId()))
+                .map(s -> toItemDto(s))
                 .collect(Collectors.toList());
     }
 
