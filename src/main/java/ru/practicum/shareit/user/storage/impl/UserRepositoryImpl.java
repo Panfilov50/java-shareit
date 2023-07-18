@@ -3,13 +3,14 @@ package ru.practicum.shareit.user.storage.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Slf4j
 @Component
