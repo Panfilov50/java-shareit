@@ -63,7 +63,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean checkingUniquenessEmail(User user){
+    public boolean checkingUniquenessEmail(User user) {
         if (usersEmails.contains(user.getEmail())) {
             throw new ConflictException("Пользователь с таким email уже зарегистрирован");
         }
