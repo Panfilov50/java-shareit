@@ -3,11 +3,9 @@ package ru.practicum.shareit.item.mapper;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.impl.ItemRepository;
 
 @RequiredArgsConstructor
 public class ItemMapper {
-    private final ItemRepository itemRepository;
 
     public static ItemDto toItemDto(Item item) {
         return ItemDto.builder()

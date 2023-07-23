@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.impl.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -28,7 +29,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getAll(Long userId) {
         return itemRepository.getAll().stream()
                 .filter(x -> userId.equals(x.getOwner().getId()))
-                .map(s -> toItemDto(s))
+                .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
@@ -71,21 +72,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> search(String text) {
-        List<ItemDto> searchedItems = new ArrayList<>();
         if (text.isBlank()) {
-            return searchedItems;
+            return new ArrayList<>();
         }
-        for (Item item : itemRepository.getAll()) {
-            if (isSearched(text, item)) {
-                searchedItems.add(toItemDto(item));
-            }
-        }
-
-        return searchedItems;
-    }
-
-    private Boolean isSearched(String text, Item item) {
-        return item.getName().toLowerCase().contains(text.toLowerCase()) ||
-                item.getDescription().toLowerCase().contains(text.toLowerCase()) && item.getAvailable();
+        return itemRepository.getAll().stream()
+                .filter(s -> s.getName().toLowerCase().contains(text.toLowerCase())
+                        || s.getDescription().toLowerCase().contains(text.toLowerCase())
+                        && s.getAvailable())
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 }

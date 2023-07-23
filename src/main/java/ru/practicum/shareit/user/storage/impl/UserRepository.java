@@ -16,4 +16,8 @@ public interface UserRepository {
 
     void delete(Long id);
 
+    void deleteEmail(Long id);
+
+    boolean checkingUniquenessEmail(User user);
+
 }

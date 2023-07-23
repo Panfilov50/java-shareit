@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceImpl;
+import static ru.practicum.shareit.user.mapper.UserMapper.toUser;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -32,16 +32,16 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> create(@Valid @RequestBody User user) {
+    public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto userDto) {
         log.info("Получен запрос на добавление пользователя");
-        return new ResponseEntity<>(userService.create(user), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.create(toUser(userDto)), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserDto> update(@RequestBody User user,
+    public ResponseEntity<UserDto> update(@RequestBody UserDto userDto,
                                           @PathVariable Long id) {
         log.info("Получен запрос на обновление пользователя id-{}", id);
-        return new ResponseEntity<>(userService.update(user, id), HttpStatus.OK);
+        return new ResponseEntity<>(userService.update(toUser(userDto), id), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
