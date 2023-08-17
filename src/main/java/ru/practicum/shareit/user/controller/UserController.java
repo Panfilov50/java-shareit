@@ -28,7 +28,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDto> add(@Valid @RequestBody UserDto userDto) {
-        log.info("Request POST /users");
+        log.info("Получен запрос на добавление пользователя");
         return new ResponseEntity<>(userService.add(userDto), HttpStatus.CREATED);
     }
 
@@ -40,7 +40,7 @@ public class UserController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable long id)  {
-        log.info(String.format("Request GET /users/%s", id));
+        log.info(String.format("Получен запрос на получение пользователя id-{}", id));
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
