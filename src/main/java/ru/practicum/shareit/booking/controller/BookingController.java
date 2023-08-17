@@ -53,7 +53,7 @@ public class BookingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<FullBookingDto>>getAllBookingsByBookerId(@RequestHeader(HEADER_USER) long bookerId,
+    public ResponseEntity<List<FullBookingDto>> getAllBookingsByBookerId(@RequestHeader(HEADER_USER) long bookerId,
                                                                         @RequestParam(defaultValue = "ALL") BookingState state) {
 
         return new ResponseEntity<>(bookingService.getAllBookingsByBookerId(bookerId, state), HttpStatus.OK);
