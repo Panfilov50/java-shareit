@@ -67,8 +67,11 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public FullBookingDto approveBooking(long bookingId, boolean approved, long itemOwnerId) {
-        if (itemRepository.findById(bookingRepository.findById(bookingId).get()
-                .getItemId()).get().getOwnerId() != itemOwnerId) {
+        if (bookingRepository.findById(bookingId).isEmpty() && userRepository.findById(bookingId).isEmpty()) {
+            throw new NotFoundException();
+        }
+        if (itemRepository.findById(bookingRepository.findById(bookingId).get().getItemId())
+                .get().getOwnerId() != itemOwnerId) {
             throw new NotFoundException();
         }
         if (bookingRepository.findById(bookingId).isPresent()) {

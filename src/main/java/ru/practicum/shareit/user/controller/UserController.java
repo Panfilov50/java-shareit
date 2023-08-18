@@ -40,7 +40,7 @@ public class UserController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable long id)  {
-        log.info(String.format("Получен запрос на получение пользователя id-{}", id));
+        log.info("Получен запрос на получение пользователя id-{}", id);
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 

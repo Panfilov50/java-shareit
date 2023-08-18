@@ -3,7 +3,9 @@ package ru.practicum.shareit.item.model;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Column;
@@ -14,7 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 
-@Data
+@Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
