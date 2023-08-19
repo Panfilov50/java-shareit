@@ -20,11 +20,11 @@ public class BookingDto {
     long itemId;
 
     @FutureOrPresent
-    @JsonFormat
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     LocalDateTime start;
 
     @Future
-    @JsonFormat
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     LocalDateTime end;
 
 }

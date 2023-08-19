@@ -4,6 +4,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.FullBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.enums.Status;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -36,9 +37,9 @@ public class BookingMapper {
                                                           ItemRepository itemRepository,
                                                           UserRepository userRepository) {
 
-        User booker = userRepository.findById(booking.getBookerId()).get();
+        User booker = userRepository.findById(booking.getBookerId()).orElseThrow(()-> new NotFoundException());
 
-        Item item = itemRepository.findById(booking.getItemId()).get();
+        Item item = itemRepository.findById(booking.getItemId()).orElseThrow(()-> new NotFoundException());
         return FullBookingDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())

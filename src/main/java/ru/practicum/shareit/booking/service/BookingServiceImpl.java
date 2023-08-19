@@ -57,7 +57,7 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException();
         }
         if (booking.getBookerId() != bookerId &&
-                itemRepository.findById(booking.getItemId()).get().getOwnerId() != bookerId) {
+                itemRepository.findById(booking.getItemId()).orElseThrow().getOwnerId() != bookerId) {
             throw new NotFoundException();
         }
         Status status = booking.getStatus();
