@@ -37,9 +37,9 @@ public class BookingMapper {
                                                           ItemRepository itemRepository,
                                                           UserRepository userRepository) {
 
-        User booker = userRepository.findById(booking.getBookerId()).orElseThrow(()-> new NotFoundException());
+        User booker = userRepository.findById(booking.getBookerId()).orElseThrow(() -> new NotFoundException());
 
-        Item item = itemRepository.findById(booking.getItemId()).orElseThrow(()-> new NotFoundException());
+        Item item = itemRepository.findById(booking.getItemId()).orElseThrow(() -> new NotFoundException());
         return FullBookingDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
