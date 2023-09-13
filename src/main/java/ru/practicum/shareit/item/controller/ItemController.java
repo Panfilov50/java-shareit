@@ -1,60 +1,78 @@
 package ru.practicum.shareit.item.controller;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.Header;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.item.dto.ItemDtoWithCommments;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
 import java.util.List;
 
+import static ru.practicum.shareit.Header.HEADER_USER;
+
 @Slf4j
 @RestController
 @RequestMapping("/items")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ItemController {
+
     private final ItemService itemService;
 
-    @GetMapping
-    public ResponseEntity<List<ItemDto>> getAll(@RequestHeader(Header.X_SHARER_USER_ID) Long userId) {
-        log.info("Получен запрос на получение всех вещей пользователя id-{}", userId);
-        return new ResponseEntity<>(itemService.getAll(userId), HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ItemDto> getById(@PathVariable Long id) {
-        log.info("Получен запрос на получение вещи id-{}", id);
-        return new ResponseEntity<>(itemService.getById(id), HttpStatus.OK);
-    }
-
     @PostMapping
-    public ResponseEntity<ItemDto> create(@RequestHeader(Header.X_SHARER_USER_ID) Long userId,
-                                          @Valid @RequestBody ItemDto itemDto) {
-        log.info("Получен запрос на создание вещи пользователя id-{}", userId);
-        return new ResponseEntity<>(itemService.create(itemDto, userId), HttpStatus.CREATED);
+    public ResponseEntity<ItemDto> addItem(@RequestBody @Valid ItemDto dto,
+                                           @RequestHeader(HEADER_USER) long ownerId) {
+        log.info("Получен запрос на добавление вещи от пользователя id-{}", ownerId);
+        return new ResponseEntity<>(itemService.addItem(dto,ownerId), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<ItemDto> update(@RequestBody ItemDto itemDto,
-                          @PathVariable Long id,
-                          @RequestHeader(Header.X_SHARER_USER_ID) Long userId) {
-        log.info("Получен запрос на обновление вещи id-{} пользователя id-{}", id, userId);
-        return new ResponseEntity<>(itemService.update(itemDto, id, userId), HttpStatus.OK);
+    @PatchMapping(value = "/{itemId}")
+    public ResponseEntity<ItemDto> updateItem(@RequestBody ItemDto dto,
+                                              @PathVariable long itemId,
+                                              @RequestHeader(HEADER_USER) long ownerId) {
+        log.info("Получен запрос на обновление вещи id-{} от пользователя id-{}", itemId, ownerId);
+        return new ResponseEntity<>(itemService.updateItem(dto,ownerId,itemId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        log.info("Получен запрос на удаление вещи id-{}", id);
-        itemService.delete(id);
+    @GetMapping(value = "/{itemId}")
+    public ResponseEntity<ItemDtoWithCommments> getItem(@PathVariable long itemId,
+                                                        @RequestHeader(HEADER_USER) long ownerId) {
+        log.info("Получен запрос на получения вещи id-{} от пользователя id-{}", itemId, ownerId);
+        return new ResponseEntity<>(itemService.getItem(itemId,ownerId), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ItemDtoWithCommments>> getAllItemsByOwner(@RequestHeader(HEADER_USER) long ownerId) {
+        log.info("Получен запрос на получения списка всех вещей пользователя id-{}", ownerId);
+        return new ResponseEntity<>(itemService.getAllItemsByOwner(ownerId), HttpStatus.OK);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ItemDto>> search(@RequestParam String text) {
-        log.info("Получен запрос на поиск по тексту-{}", text);
-        return new ResponseEntity<>(itemService.search(text), HttpStatus.OK);
+    public ResponseEntity<List<ItemDto>> searchItem(@RequestParam String text,
+                                                    @RequestHeader(HEADER_USER) long ownerId) {
+        log.info("Получен запрос на поиск -{}", text);
+        return new ResponseEntity<>(itemService.searchItem(text.toLowerCase(),ownerId), HttpStatus.OK);
+    }
+
+    @PostMapping("{itemId}/comment")
+    public ResponseEntity<Comment> addComment(@RequestBody @Valid Comment dto,
+                                              @PathVariable long itemId,
+                                              @RequestHeader(HEADER_USER) long authorId) {
+
+        log.info("Получен запрос на добавление комментария от пользователя id-{} ", authorId);
+        return new ResponseEntity<>(itemService.addComment(dto, itemId, authorId), HttpStatus.OK);
     }
 }
+
