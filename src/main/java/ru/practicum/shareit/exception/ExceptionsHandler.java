@@ -13,13 +13,12 @@ public class ExceptionsHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> constraintException(final MethodArgumentTypeMismatchException e) {
         log.error("MethodArgumentTypeMismatchException ");
-        return ResponseEntity.status(400).body(new ErrorResponse(
-                new StringBuilder()
-                        .append("Unknown ")
-                        .append(e.getName())
-                        .append(": ")
-                        .append(e.getValue())
-                        .toString()));
+        return ResponseEntity.status(400).body(new ErrorResponse(new StringBuilder()
+                .append("Unknown ")
+                .append(e.getName())
+                .append(": ")
+                .append(e.getValue())
+                .toString()));
     }
 
     @ExceptionHandler

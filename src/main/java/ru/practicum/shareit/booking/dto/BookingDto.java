@@ -1,9 +1,10 @@
 package ru.practicum.shareit.booking.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.Future;
@@ -12,6 +13,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingDto {
 
@@ -20,11 +23,9 @@ public class BookingDto {
     long itemId;
 
     @FutureOrPresent
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime start;
 
     @Future
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime end;
 
 }
