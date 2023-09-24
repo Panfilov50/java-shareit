@@ -1,8 +1,10 @@
 package ru.practicum.shareit.booking;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -48,6 +50,20 @@ class BookingRepositoryTest {
         LocalDateTime from = LocalDateTime.now().plusHours(1);
         LocalDateTime till = from.plusDays(1);
         booking = bookingRepository.save(new Booking(1L, from, till, item.getId(), user2.getId(), Status.APPROVED));
+    }
+
+    @AfterEach
+    void clear() {
+       user1 = null;
+       user2 = null;
+       item = null;
+       request = null;
+       booking = null;
+
+       userRepository.deleteAll();
+       requestRepository.deleteAll();
+       itemRepository.deleteAll();
+       bookingRepository.deleteAll();
     }
 
     @Test
@@ -106,6 +122,13 @@ class BookingRepositoryTest {
         assertEquals(booking, res.get(0));
     }
 
+    @Test
+    void bookingsForItemPast() {
+        List<Booking> res = bookingRepository.bookingsForItemPast(item.getId(), LocalDateTime.now().plusDays(2), Pageable.unpaged());
+        assertNotNull(res);
+        assertFalse(res.isEmpty());
+        assertEquals(booking, res.get(0));
+    }
 
     @Test
     void bookingsForItemAndBookerPast() {
@@ -114,4 +137,29 @@ class BookingRepositoryTest {
         assertFalse(res.isEmpty());
         assertEquals(booking, res.get(0));
     }
+
+    @Test
+    void bookingsForItemFuture() {
+        List<Booking> res = bookingRepository.bookingsForItemFuture(item.getId(), LocalDateTime.now(), Pageable.unpaged());
+        assertNotNull(res);
+        assertFalse(res.isEmpty());
+        assertEquals(booking, res.get(0));
+    }
+
+    @Test
+    void bookingsForItemCurrent() {
+        List<Booking> res = bookingRepository.bookingsForItemCurrent(item.getId(), LocalDateTime.now().plusHours(1), Pageable.unpaged());
+        assertNotNull(res);
+        assertFalse(res.isEmpty());
+        assertEquals(booking, res.get(0));
+    }
+
+    @Test
+    void findAllByItemsOwnerId() {
+        List<Booking> res = bookingRepository.findAllByItemsOwnerId(user2.getId());
+        assertNotNull(res);
+        assertFalse(res.isEmpty());
+        assertEquals(booking, res.get(0));
+    }
+
 }
