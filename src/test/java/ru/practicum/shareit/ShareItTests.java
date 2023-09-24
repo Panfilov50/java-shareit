@@ -86,4 +86,6 @@ class ShareItTests {
 
 		Assertions.assertThrows(NotFoundException.class, () -> userService.getUserById(1));
 	}
+
+
 }

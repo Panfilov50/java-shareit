@@ -33,12 +33,13 @@ public class ItemRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @NotNull
+    @Column(name = "description", nullable = false, length = 512)
     String description;
 
     @Column(name = "requester_id")
     long requesterId;
 
-    LocalDateTime created;
+    @Column(name = "created", nullable = false)
+    private LocalDateTime created = LocalDateTime.now();
 
 }
