@@ -49,7 +49,7 @@ class CommentRepositoryTest {
         item = itemRepository.save(new Item(1L, "itemName", "description", true, user1, null, null, null, request));
         comment = commentRepository.save(new Comment(1L, "comment", item, user2, now));
     }
-    
+
     @Test
     void findAllByItemId() {
         List<Comment> res = commentRepository.findAllByItemId(item.getId());
