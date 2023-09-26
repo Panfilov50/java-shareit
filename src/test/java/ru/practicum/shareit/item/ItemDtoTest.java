@@ -16,7 +16,7 @@ class ItemDtoTest {
     private JacksonTester<ItemDto> json;
 
     @Test
-    void CommentDtoTest() throws Exception {
+    void itemDtoTest() throws Exception {
         ItemDto itemDto = new ItemDto(1L, "name", "description", true, 1L);
 
         JsonContent<ItemDto> result = json.write(itemDto);
