@@ -18,7 +18,7 @@ class CommentDtoTest {
     private JacksonTester<CommentDto> json;
 
     @Test
-    void CommentDtoTest() throws Exception {
+    void commentDtoTest() throws Exception {
         CommentDto commentDto = new CommentDto(1L, "text", "authorName", LocalDateTime.of(2000, 1, 1, 0, 0, 0));
 
 
