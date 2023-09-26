@@ -18,7 +18,7 @@ class RequestAnswerDtoTest {
     private JacksonTester<RequestAnswerDto> json;
 
     @Test
-    void RequestAnswerDtoTest() throws Exception {
+    void requestAnswerDtoTest() throws Exception {
         RequestAnswerDto requestAnswerDto = new RequestAnswerDto(1L, "description", LocalDateTime.of(2000, 1, 1, 0, 0, 0));
 
         JsonContent<RequestAnswerDto> result = json.write(requestAnswerDto);
