@@ -64,7 +64,7 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc() {
-        List<Booking> res = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(user2.getId(),LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(1), Pageable.unpaged() );
+        List<Booking> res = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(user2.getId(),LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(1), Pageable.unpaged());
         assertNotNull(res);
         assertFalse(res.isEmpty());
         assertEquals(booking, res.get(0));
