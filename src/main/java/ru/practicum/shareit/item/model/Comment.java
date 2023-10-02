@@ -1,9 +1,14 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AccessLevel;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.FieldDefaults;
+import lombok.ToString;
+import ru.practicum.shareit.user.model.User;
 
 
 import javax.persistence.Column;
@@ -11,30 +16,36 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Data
+@Table(name = "comments")
 @Entity
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Comment {
-
     @Id
+    @Column(name = "comment_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    private Long id;
 
-    @NotBlank
-    @NotNull
-    String text;
+    private String text;
 
-    LocalDateTime created;
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "item_id")
+    private Item item;
 
-    @Column(name = "item_id")
-    long itemId;
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private User author;
 
-    @Column(name = "author_id")
-    long authorId;
-    String authorName;
+    private LocalDateTime created;
 }

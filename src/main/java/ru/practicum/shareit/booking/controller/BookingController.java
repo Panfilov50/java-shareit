@@ -2,20 +2,12 @@ package ru.practicum.shareit.booking.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.FullBookingDto;
-import ru.practicum.shareit.booking.model.enums.BookingState;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.PaginationMapper;
+import ru.practicum.shareit.booking.dto.BookingAnswerDto;
+import ru.practicum.shareit.booking.dto.BookingNewAnswerDto;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
@@ -25,46 +17,53 @@ import static ru.practicum.shareit.Header.HEADER_USER;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/bookings")
 @AllArgsConstructor
+@RequestMapping(path = "/bookings")
 public class BookingController {
     private final BookingService bookingService;
+    private final BookingMapper bookingMapper;
+
 
     @PostMapping
-    public ResponseEntity<FullBookingDto> createBooking(@Valid @RequestBody BookingDto dto,
-                                                        @RequestHeader(HEADER_USER) long bookerId) {
-
-        return new ResponseEntity<>(bookingService.addBooking(dto, bookerId), HttpStatus.CREATED);
-    }
-
-    @PatchMapping("/{bookingId}")
-    public ResponseEntity<FullBookingDto> approveBooking(@PathVariable long bookingId,
-                                                         @RequestParam boolean approved,
-                                                         @RequestHeader(HEADER_USER) long bookerId) {
-
-        return new ResponseEntity<>(bookingService.approveBooking(bookingId, approved, bookerId), HttpStatus.OK);
+    public BookingNewAnswerDto add(@RequestHeader(name = HEADER_USER) long bookerId,
+                                   @Valid @RequestBody BookingRequestDto dto) {
+        log.info("POST /bookings");
+        return bookingService.add(bookerId, dto.getItemId(), bookingMapper.bookingRequestDtoToBooking(dto));
     }
 
     @GetMapping("/{bookingId}")
-    public ResponseEntity<FullBookingDto> getBooking(@PathVariable long bookingId,
-                                                     @RequestHeader(HEADER_USER) long bookerId) {
+    public BookingAnswerDto getByBookingId(@PathVariable long bookingId,
+                                           @RequestHeader(name = HEADER_USER) long userId) {
+        log.info("GET /bookings/" + bookingId);
+        return bookingMapper.bookingToBookingAnswerDto(bookingService.getByBookingId(bookingId, userId));
+    }
 
-        return new ResponseEntity<>(bookingService.getBooking(bookingId, bookerId), HttpStatus.OK);
+    @PatchMapping("/{bookingId}")
+    public BookingAnswerDto approved(@PathVariable long bookingId,
+                                     @RequestHeader(name = HEADER_USER) long ownerId,
+                                     @RequestParam boolean approved) {
+        log.info("PATCH /bookings/" + bookingId + "?approved=" + approved);
+        return bookingMapper.bookingToBookingAnswerDto(
+                bookingService.approved(bookingId, ownerId, approved));
     }
 
     @GetMapping
-    public ResponseEntity<List<FullBookingDto>> getAllBookingsByBookerId(@RequestHeader(HEADER_USER) long bookerId,
-                                                                        @RequestParam(defaultValue = "ALL") BookingState state) {
-
-        return new ResponseEntity<>(bookingService.getAllBookingsByBookerId(bookerId, state), HttpStatus.OK);
+    public List<BookingAnswerDto> getAllByBooker(@RequestHeader(name = HEADER_USER) long bookerId,
+                                                 @RequestParam(defaultValue = "ALL") String state,
+                                                 @RequestParam(required = false) Integer from,
+                                                 @RequestParam(required = false) Integer size) {
+        log.info("GET /bookings?state=" + state.toString());
+        return bookingMapper.bookingListToListBookingAnswerDto(
+                bookingService.getAllBookingByBookerId(bookerId, state, PaginationMapper.toMakePage(from, size)));
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<List<FullBookingDto>> getAllBookingItemsByBookerId(@RequestHeader(HEADER_USER) long ownerId,
-                                                                             @RequestParam(defaultValue = "ALL") BookingState state) {
-
-        return new ResponseEntity<>(bookingService.getAllBookingByItemsByOwnerId(ownerId, state), HttpStatus.OK);
+    public List<BookingAnswerDto> getAllByOwner(@RequestHeader(name = HEADER_USER) long ownerId,
+                                                @RequestParam(defaultValue = "ALL") String state,
+                                                @RequestParam(required = false) Integer from,
+                                                @RequestParam(required = false) Integer size) {
+        log.info("GET /bookings?state=" + state.toString());
+        return bookingMapper.bookingListToListBookingAnswerDto(
+                bookingService.getAllBookingByOwnerId(ownerId, state, PaginationMapper.toMakePage(from, size)));
     }
-
 }
-

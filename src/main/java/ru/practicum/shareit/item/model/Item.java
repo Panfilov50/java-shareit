@@ -1,42 +1,45 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.FieldDefaults;
+import lombok.*;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.request.model.Request;
+import ru.practicum.shareit.user.model.User;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
-
-@Getter
-@Setter
+@Data
+@Builder
 @Entity
+@Table(name = "items")
 @AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "items")
 public class Item {
-
     @Id
+    @Column(name = "item_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    private Long id;
+    private String name;
+    private String description;
+    private Boolean available;
 
-    String name;
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
-    String description;
+    @Transient
+    private BookingShortDto lastBooking;
 
-    boolean available;
+    @Transient
+    private BookingShortDto nextBooking;
 
-    @Column(name = "owner_id")
-    long ownerId;
+    @Transient
+    private List<CommentDto> comments;
 
-    @Column(name = "request_id")
-    long requestId;
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "request_id")
+    private Request request;
 }

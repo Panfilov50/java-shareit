@@ -1,21 +1,12 @@
 package ru.practicum.shareit.item.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.item.dto.ItemDtoWithCommments;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Comment;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.PaginationMapper;
+import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.mapper.CommentMapper;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -23,56 +14,66 @@ import java.util.List;
 
 import static ru.practicum.shareit.Header.HEADER_USER;
 
+
 @Slf4j
 @RestController
 @RequestMapping("/items")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ItemController {
-
     private final ItemService itemService;
+    private final ItemMapper itemMapper;
+    private final CommentMapper commentMapper;
 
     @PostMapping
-    public ResponseEntity<ItemDto> addItem(@RequestBody @Valid ItemDto dto,
-                                           @RequestHeader(HEADER_USER) long ownerId) {
-        log.info("Получен запрос на добавление вещи от пользователя id-{}", ownerId);
-        return new ResponseEntity<>(itemService.addItem(dto,ownerId), HttpStatus.CREATED);
+    public ItemDto add(@RequestHeader(name = HEADER_USER) long userId, @Valid @RequestBody ItemDto itemDto) {
+        log.info("POST /items");
+        return itemMapper.itemToItemDto(itemService.add(userId, itemDto.getRequestId(), itemMapper.itemDtoToItem(itemDto)));
     }
 
-    @PatchMapping(value = "/{itemId}")
-    public ResponseEntity<ItemDto> updateItem(@RequestBody ItemDto dto,
-                                              @PathVariable long itemId,
-                                              @RequestHeader(HEADER_USER) long ownerId) {
-        log.info("Получен запрос на обновление вещи id-{} от пользователя id-{}", itemId, ownerId);
-        return new ResponseEntity<>(itemService.updateItem(dto,ownerId,itemId), HttpStatus.OK);
+    @PatchMapping("/{itemId}")
+    public ItemDto update(@PathVariable long itemId,
+                          @RequestHeader(name = HEADER_USER) long userId,
+                          @Valid @RequestBody UpdateItemDto itemDto) {
+        log.info(String.format("PATCH /items/%s", itemId));
+        return itemMapper.itemToItemDto(itemService.update(itemId, userId, itemMapper.updateItemDtoToItem(itemDto)));
     }
 
-    @GetMapping(value = "/{itemId}")
-    public ResponseEntity<ItemDtoWithCommments> getItem(@PathVariable long itemId,
-                                                        @RequestHeader(HEADER_USER) long ownerId) {
-        log.info("Получен запрос на получения вещи id-{} от пользователя id-{}", itemId, ownerId);
-        return new ResponseEntity<>(itemService.getItem(itemId,ownerId), HttpStatus.OK);
+    @DeleteMapping("/{itemId}")
+    public void remove(@PathVariable long itemId) {
+        log.info(String.format("GET /items/%s", itemId));
+        itemService.remove(itemId);
+    }
+
+    @GetMapping("/{itemId}")
+    public ItemGetDto getByItemId(@PathVariable long itemId, @RequestHeader(name = HEADER_USER) long userId) {
+        log.info("Запрос на выдачу предмета");
+        return itemMapper.itemToItemGetDto(itemService.getByItemId(itemId, userId));
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemDtoWithCommments>> getAllItemsByOwner(@RequestHeader(HEADER_USER) long ownerId) {
-        log.info("Получен запрос на получения списка всех вещей пользователя id-{}", ownerId);
-        return new ResponseEntity<>(itemService.getAllItemsByOwner(ownerId), HttpStatus.OK);
+    public List<ItemGetDto> getByOwnerId(@RequestHeader(name = HEADER_USER) long ownerId,
+                                         @RequestParam(required = false) Integer from,
+                                         @RequestParam(required = false) Integer size) {
+        log.info("GET /items");
+        return itemMapper.itemListToItemGetDtoList(itemService.getByOwnerId(ownerId, PaginationMapper.toMakePage(from, size)));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ItemDto>> searchItem(@RequestParam String text,
-                                                    @RequestHeader(HEADER_USER) long ownerId) {
-        log.info("Получен запрос на поиск -{}", text);
-        return new ResponseEntity<>(itemService.searchItem(text.toLowerCase(),ownerId), HttpStatus.OK);
+    public List<ItemDto> search(@RequestParam(required = false) String text,
+                                @RequestParam(required = false) Integer from,
+                                @RequestParam(required = false) Integer size) {
+        log.info(String.format("GET /items/search?text=%s", text));
+        return itemMapper.itemListToItemDtoList(itemService.search(text, PaginationMapper.toMakePage(from, size)));
     }
 
-    @PostMapping("{itemId}/comment")
-    public ResponseEntity<Comment> addComment(@RequestBody @Valid Comment dto,
-                                              @PathVariable long itemId,
-                                              @RequestHeader(HEADER_USER) long authorId) {
-
-        log.info("Получен запрос на добавление комментария от пользователя id-{} ", authorId);
-        return new ResponseEntity<>(itemService.addComment(dto, itemId, authorId), HttpStatus.OK);
+    @PostMapping("/{itemId}/comment")
+    public CommentDto comment(
+            @PathVariable long itemId,
+            @RequestHeader(name = HEADER_USER) long userId,
+            @Valid @RequestBody AddCommentDto addCommentDto
+    ) {
+        log.info("POST /items/" + itemId + "/comment");
+        return commentMapper.commentToCommentDto(
+                itemService.addComment(itemId, userId, commentMapper.addCommentDtoToComment(addCommentDto)));
     }
 }
-

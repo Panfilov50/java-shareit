@@ -2,59 +2,53 @@ package ru.practicum.shareit.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.RequestUserDto;
+import ru.practicum.shareit.user.dto.UpdateUserDto;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
 
+
 @Slf4j
 @RestController
-@RequestMapping(path = "/users")
 @RequiredArgsConstructor
+@RequestMapping(path = "/users")
 public class UserController {
-
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping
-    public ResponseEntity<UserDto> add(@Valid @RequestBody UserDto userDto) {
-        log.info("Получен запрос на добавление пользователя");
-        return new ResponseEntity<>(userService.add(userDto), HttpStatus.CREATED);
+    public UserDto add(@Valid @RequestBody RequestUserDto userDto) {
+        log.info("POST /users");
+        //Обычно mapper используется на уровне контроллеров
+        return userMapper.userToUserDto(userService.add(userMapper.requestUserDtoToUser(userDto)));
+    }
+
+    @PatchMapping("/{id}")
+    public UserDto update(@PathVariable Long id, @Valid @RequestBody UpdateUserDto userDto) {
+        log.info(String.format("PATCH /users/%s", id));
+        return userMapper.userToUserDto(userService.update(id, userMapper.updateUserDtoToUser(userDto)));
+    }
+
+    @DeleteMapping("/{id}")
+    public void remove(@PathVariable Long id) {
+        log.info(String.format("DELETE /users/%s", id));
+        userService.remove(id);
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        log.info("Получен запрос на получение всех пользователей");
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    public List<UserDto> getAll() {
+        log.info("GET /users");
+        return userMapper.userListToUserDtoList(userService.getAll());
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable long id)  {
-        log.info("Получен запрос на получение пользователя id-{}", id);
-        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
-    }
-
-    @PatchMapping(value = "/{id}")
-    public ResponseEntity<UserDto> update(@RequestBody UserDto userDto,
-                                          @PathVariable Long id) {
-        log.info("Получен запрос на обновление пользователя id-{}", id);
-        return new ResponseEntity<>(userService.update(userDto, id), HttpStatus.OK);
-    }
-
-    @DeleteMapping(value = "/{id}")
-    public void delete(@PathVariable long id) {
-        log.info("Получен запрос на удаление пользователя id-{}", id);
-        userService.delete(id);
+    @GetMapping("/{id}")
+    public UserDto getById(@PathVariable Long id) {
+        log.info(String.format("GET /users/%s", id));
+        return userMapper.userToUserDto(userService.getByUserId(id));
     }
 }
-

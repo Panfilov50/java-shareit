@@ -1,27 +1,27 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.experimental.FieldDefaults;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Data
+@Getter
+@Setter
+@Builder
+@EqualsAndHashCode
+@NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDto {
+    private Long id;
 
-    long id;
+    @NotBlank(message = "Название предмета не может быть пустым")
+    private String name;
 
-    @NotBlank
-    String name;
+    @NotBlank(message = "Описание предмета не может быть пустым")
+    private String description;
 
-    @NotNull
-    String description;
+    @NotNull(message = "Параметр available не может быть пустым")
+    private Boolean available;
 
-    @NotNull
-    Boolean available;
-
+    private Long requestId;
 }
