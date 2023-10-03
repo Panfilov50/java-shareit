@@ -50,7 +50,7 @@ public class BookingController {
                                                  @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                  @Positive @RequestParam(name = "size", defaultValue = "20") Integer size) {
 
-        log.info("GET /bookings?state=" + state.toString());
+        log.info("GET /bookings?state=" + state);
         return bookingClient.getAllByBooker(bookerId, state, from, size);
     }
 
@@ -60,7 +60,7 @@ public class BookingController {
                                                 @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                 @Positive @RequestParam(name = "size", defaultValue = "20") Integer size) {
 
-        log.info("GET /bookings?state=" + state.toString());
+        log.info("GET /bookings?state=" + state);
         return bookingClient.getAllByOwner(ownerId, state, from, size);
     }
 }
